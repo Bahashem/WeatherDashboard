@@ -77,7 +77,7 @@ return{
 };
    }
   // TODO: Create buildGeocodeQuery method
- private buildGeocodeQuery(): string {
+ private buildGeocod eQuery(): string {
   return `${this.baseURL}/direct?q=${city}&limit=1&appid=${this.APIKey}`;
  }
   // TODO: Create buildWeatherQuery method

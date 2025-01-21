@@ -16,7 +16,7 @@ router.post('/', (req: Request, res: Response) => {
     const response = await axios.get(`${BASE_URL}`,{
       params:{
         q:city,
-        appid: API_KEY,
+        appid: 'API_KEY',
         units: 'metric',
       },
     });
@@ -38,11 +38,3 @@ router.get('/history', async (req: Request, res: Response) => {});
 router.delete('/history/:id', async (req: Request, res: Response) => {});
 
 export default router;
-res.status(200).json(weatherData);
-  } catch (error: any) {
-    res.status(error.response?.status || 500).json({
-      error: 'Failed to fetch weather data',
-      details: error.message,
-    });
-  }
-});

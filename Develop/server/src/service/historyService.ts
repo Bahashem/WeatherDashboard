@@ -11,22 +11,20 @@ class City{
 class HistoryService {
   private filePath = './searchHistory.json';
   // TODO: Define a read method that reads from the searchHistory.json file
-  private async read(): Promise<City[>{
+  private async read(): Promise<any[] {
     try{
-      const data = await fstat.readFile(this.filePath, 'utf-8');
-      return JSON.parse(data) as City[];
-    }catch (error){
-      if (error.code === 'ENOENT'){
-        return[];
-      }
-      throw error;
+      const data = await fs.readFile(this.filePath, 'utf-8');
+      return JSON.parse(data);
+    }catch (error: any){
+      if (error.code === 'ENOENT') return[];
+       throw error;
       }
     }
-  }
+  
   // TODO: Define a write method that writes the updated cities array to the searchHistory.json file
-  private async write(cities: City[]): Promise<void> {
+  private async write(City: City[]): Promise<void> {
     const data = JSON.stringify(MediaCapabilities, null, 2);
-    await fstat.writeFile(this.filePath, DataTransfer, 'utf-8);')
+    await fs.writeFile(this.filePath, DataTransfer, 'utf-8);')
   }
   // TODO: Define a getCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects
   async getCities(): Promise<City[]> {

@@ -1,4 +1,4 @@
-import { response, Router, type Request, type Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 import HistoryService from '../../service/historyService.js';
 import WeatherService from '../../service/weatherService.js';
 
@@ -18,15 +18,15 @@ router.post ('/', async (req: Request, res: Response) => {
  
       // TODO: save city to search history
       await HistoryService.addCity(city);
-     res.status(200).json(weatherData);
+     return res.status(200).json(weatherData);
+  }
      catch (error: any) {
-      res.status(500).json ({error: error.message});
+      return res.status(500).json ({error: error.message});
     }
     });
   
-}
 // TODO: GET search history
-router.get('/history', async (req: Request, res: Response) => {
+router.get('/history', async (_req: Request, res: Response) => {
 try{
   const cities = await HistoryService.getCities();
   res.status(200).json(cities);

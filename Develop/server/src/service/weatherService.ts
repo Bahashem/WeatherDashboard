@@ -50,10 +50,12 @@ class WeatherService {
   
   // TODO: Create fetchLocationData method
    private async fetchLocationData(query: string) {
-const response =await fetch(query);
+try {const response:Coordinates[]=await fetch(query).then((res)=>res.json());
 
-const locationData = await response.json();
-return this.destructureLocationData(locationData[0]);
+return response[0];}catch (error) {
+  console.error(error);
+  throw error;
+}
    }
 
   // TODO: Create destructureLocationData method
@@ -73,7 +75,7 @@ return{
   }
   // TODO: Create fetchAndDestructureLocationData method
    private async fetchAndDestructureLocationData() {
-    return await this.fetchLocationData(this.buildGeocodeQuery());
+    return await this.fetchLocationData(this.buildGeocodeQuery()).then((data)=>this.destructureLocationData(data));
     }
   // TODO: Create fetchWeatherData method
   private async fetchWeatherData(coordinates: Coordinates) {
@@ -83,20 +85,23 @@ return data;
 }
 
   // TODO: Build parseCurrentWeather method
-   private parseCurrentWeather(response: any): Weather {
+   private parseCurrentWeather(data: any): Weather {
   return new Weather(
-    dayjs(response.dt *1000).format('YYY-MM-DD HH:mm:ss'),
-    response.weather[0].icon,
-    response.weather[0].description,
+    dayjs(data.dt *1000).format('YYY-MM-DD HH:mm:ss'),
+    `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`,
+    data.weather[0].description,
     this.name,
-    response.main.temp,
-    response.main.hummidity,
-    response.wind.windSpeed
+    data.main.temp,
+    data.main.hummidity,
+    data.wind.windSpeed
   );
 }
   // TODO: Complete buildForecastArray method
-  private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
-    return [currentWeather, ...weatherData.map((item: any) => this.parseCurrentWeather(item))];
+  private buildForecastArray(currentWeather: Weather, forcastData: any[]): Weather[] {
+    return [
+    currentWeather, 
+      ...forcastData.map((item: any) => this.parseCurrentWeather(item)),   
+    ];
   }
   // TODO: Complete getWeatherForCity method
   async getWeatherForCity(city: string) {

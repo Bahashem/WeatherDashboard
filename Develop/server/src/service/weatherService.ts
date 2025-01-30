@@ -12,8 +12,8 @@ class Weather{
   date: Dayjs| string;
   icon: string;
   iconDescription: string;
-  cityName: string;
-  temperature: number;
+  city: string;
+  tempF: number;
   humidity: number;
   windSpeed: number;
 
@@ -21,8 +21,8 @@ class Weather{
     date: Dayjs| string,
     icon: string,
     iconDescription: string,
-    cityName: string,
-    temperature: number,
+    city: string,
+    tempF: number,
     humidity: number,
     windSpeed: number,
      ){
@@ -30,8 +30,8 @@ class Weather{
      this.date = date;
      this.icon = icon;
      this.iconDescription = iconDescription;
-     this.cityName = cityName;
-     this.temperature = temperature;
+     this.city = city;
+     this.tempF = tempF;
      this.humidity = humidity;
      this.windSpeed = windSpeed;  
 }
@@ -86,30 +86,45 @@ return data;
 
   // TODO: Build parseCurrentWeather method
    private parseCurrentWeather(data: any): Weather {
-  return new Weather(
-    dayjs(data.dt *1000).format('YYY-MM-DD HH:mm:ss'),
-    `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`,
-    data.weather[0].description,
+    console.log (data)
+     return new Weather(
+    dayjs.unix(data.list[0].dt).format('YYYY-MM-DD'),
+    data.list[0].weather[0].icon,
+    data.list[0].weather[0].description,
     this.name,
-    data.main.temp,
-    data.main.hummidity,
-    data.wind.windSpeed
+    data.list[0].main.temp,
+    data.list[0].main.humidity,
+    data.list[0].wind.speed
   );
 }
   // TODO: Complete buildForecastArray method
   private buildForecastArray(currentWeather: Weather, forcastData: any[]): Weather[] {
-    return [
-    currentWeather, 
-      ...forcastData.map((item: any) => this.parseCurrentWeather(item)),   
-    ];
+    let forcastArray:Weather[]=[currentWeather];
+    let filteredArray=forcastData.filter((item:any)=>{
+      return item.dt_txt.includes("12:00:00")
+    })
+    filteredArray.map((item:any) => {
+     forcastArray.push(
+      new Weather(
+        dayjs.unix(item.dt).format('YYYY-MM-DD'),
+        item.weather[0].icon,
+        item.weather[0].description,
+        this.name,
+        item.main.temp,
+        item.main.humidity,
+        item.wind.speed 
+     ) 
+    )
+    })   
+      return forcastArray
   }
   // TODO: Complete getWeatherForCity method
   async getWeatherForCity(city: string) {
     this.name=city
     const coordinates = await this.fetchAndDestructureLocationData();
     const weatherData = await this.fetchWeatherData(coordinates);
-    const currentWeather = await this.parseCurrentWeather(weatherData);
-    return this.buildForecastArray(currentWeather,weatherData);
+    const currentWeather = this.parseCurrentWeather(weatherData);
+    return this.buildForecastArray(currentWeather,weatherData.list);
   }
 }
 
